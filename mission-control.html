@@ -851,14 +851,32 @@
     <main class="main-content">
         <!-- Dashboard Tab -->
         <div class="tab-content active" id="dashboard">
-            <div class="welcome-bar">
+            <!-- Smart Briefing Section -->
+            <div class="welcome-bar" id="briefingBar">
                 <div class="welcome-text">
                     <h1 id="greeting">Good morning, Dibs</h1>
-                    <p class="subtitle">OpenClaw Empire — CEO / AI Systems Operator</p>
+                    <p class="subtitle" id="briefingSubtitle">Time to conquer today</p>
+                    <p id="briefingSummary" style="margin-top: 8px; font-size: 0.9rem; color: var(--text-secondary);">Loading briefing...</p>
                 </div>
                 <div class="datetime">
                     <div class="time" id="clock">--:--</div>
                     <div class="date" id="date">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Daily News Briefing -->
+            <div class="section" id="newsBriefing">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span>📰</span> <span id="newsTitle">Morning Briefing</span>
+                    </h2>
+                    <button class="btn btn-secondary" onclick="refreshNews()">↻ Refresh</button>
+                </div>
+                <div id="newsList" style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                    <!-- News items populated by JS -->
+                </div>
+                <div id="briefingQuote" style="margin-top: var(--spacing-md); padding: var(--spacing-md); background: rgba(255,107,53,0.1); border-left: 3px solid var(--accent-primary); border-radius: var(--radius-sm); font-style: italic; color: var(--text-secondary);">
+                    <!-- Motivational quote -->
                 </div>
             </div>
 
@@ -1515,6 +1533,92 @@
             container.innerHTML = services.map(s => `<div class="metric-card" style="padding: var(--spacing-md);"><div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);"><span style="font-size: 1.5rem;">${s.icon}</span><div style="font-weight: 600;">${s.name}</div></div><div style="font-size: 0.75rem; color: var(--text-muted);">${s.details}</div></div>`).join('');
         }
 
+        // ==================== SMART BRIEFING SYSTEM ====================
+        const briefingData = {
+            morning: {
+                greeting: "Good morning, Dibs!",
+                subtitle: "Time to conquer today",
+                summary: "3 trading opportunities, 2 AI updates. Top priority: Mission Control build",
+                newsTitle: "Morning Briefing",
+                quote: "The best time to plant a tree was 20 years ago. The second best time is now.",
+                news: [
+                    { title: "Bitcoin breaks $42K resistance", source: "CoinDesk", category: "Trading", summary: "BTC shows strong momentum after consolidation" },
+                    { title: "OpenClaw releases new agent framework", source: "TechCrunch", category: "AI News", summary: "Major update enables 100 parallel agents" },
+                    { title: "Crypto market cap hits $1.6T", source: "Reuters", category: "Market Update", summary: "Overall market showing bullish sentiment" },
+                    { title: "Remote work trends 2026", source: "Forbes", category: "Business", summary: "Trading from anywhere becoming standard" },
+                    { title: "10 habits of successful traders", source: "Bloomberg", category: "Personal Development", summary: "Discipline and journaling top the list" }
+                ]
+            },
+            afternoon: {
+                greeting: "Good afternoon, Dibs!",
+                subtitle: "How's progress?",
+                summary: "Trading trending up. 5 tasks completed. 2 items need attention",
+                newsTitle: "Afternoon Check-in",
+                quote: "Success is the sum of small efforts, repeated day in and day out.",
+                news: [
+                    { title: "ETH 2.0 staking rewards increase", source: "CoinTelegraph", category: "Trading", summary: "Annual yield now at 4.2%" },
+                    { title: "AI coding assistants comparison", source: "The Verge", category: "AI News", summary: "Kimi leads in complex reasoning tasks" },
+                    { title: "Side hustle income tax guide", source: "WSJ", category: "Business", summary: "What you need to know for 2026" },
+                    { title: "Solana ecosystem growth", source: "Decrypt", category: "Market Update", summary: "DeFi TVL up 15% this month" },
+                    { title: "Time management for entrepreneurs", source: "Inc", category: "Personal Development", summary: "Focus blocks vs Pomodoro technique" }
+                ]
+            },
+            evening: {
+                greeting: "Good evening, Dibs!",
+                subtitle: "Reflect and plan",
+                summary: "Today's wins: 8 tasks, 3 links filed, Mission Control deployed",
+                newsTitle: "Evening Review",
+                quote: "Rest when you're weary. Refresh and renew yourself, your body, your mind, your spirit.",
+                news: [
+                    { title: "Daily crypto market wrap", source: "CoinDesk", category: "Trading", summary: "BTC +2.3%, ETH +1.8%, SOL +5.2%" },
+                    { title: "OpenAI announces new model", source: "TechCrunch", category: "AI News", summary: "Multimodal capabilities expanded" },
+                    { title: "Freelance economy report 2026", source: "Forbes", category: "Business", summary: "Independent work up 23% year over year" },
+                    { title: "Global markets close mixed", source: "Reuters", category: "Market Update", summary: "Asia up, Europe flat, US pending" },
+                    { title: "Sleep and performance link", source: "Harvard Health", category: "Personal Development", summary: "Quality rest improves decision making by 40%" }
+                ]
+            }
+        };
+
+        function getTimeOfDay() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) return 'morning';
+            if (hour >= 12 && hour < 17) return 'afternoon';
+            return 'evening';
+        }
+
+        function renderBriefing() {
+            const timeOfDay = getTimeOfDay();
+            const data = briefingData[timeOfDay];
+            
+            // Update greeting
+            document.getElementById('greeting').textContent = data.greeting;
+            document.getElementById('briefingSubtitle').textContent = data.subtitle;
+            document.getElementById('briefingSummary').textContent = data.summary;
+            document.getElementById('newsTitle').textContent = data.newsTitle;
+            document.getElementById('briefingQuote').textContent = `"${data.quote}"`;
+            
+            // Render news
+            const newsContainer = document.getElementById('newsList');
+            newsContainer.innerHTML = data.news.map((item, index) => `
+                <div style="display: flex; gap: var(--spacing-md); padding: var(--spacing-sm); background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-primary);">
+                    <div style="font-weight: 700; color: var(--accent-primary); min-width: 24px;">${index + 1}</div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px;">
+                            <div style="font-weight: 600; font-size: 0.9375rem;">${item.title}</div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); background: var(--bg-glass); padding: 2px 8px; border-radius: 4px;">${item.category}</span>
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 2px;">${item.summary}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Source: ${item.source}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function refreshNews() {
+            // In real implementation, this would fetch from NewsAPI
+            alert('Refreshing news... (In production: fetch from NewsAPI or SearXNG)');
+        }
+
         // ==================== INITIALIZE ====================
         function init() {
             // Initialize data if empty
@@ -1539,6 +1643,7 @@
             renderAgents();
             renderLinks();
             renderHealth();
+            renderBriefing();
             initNotes();
             
             // Update metrics
