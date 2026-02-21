@@ -866,7 +866,7 @@
             </div>
 
             <!-- Daily News Briefing -->
-            <div class="section" id="newsBriefing">
+            <div class="section" id="newsBriefing" style="display: block !important; visibility: visible !important;">
                 <div class="section-header">
                     <h2 class="section-title">
                         <span>📰</span> <span id="newsTitle">Morning Briefing</span>
@@ -1588,31 +1588,46 @@
         }
 
         function renderBriefing() {
-            const timeOfDay = getTimeOfDay();
-            const data = briefingData[timeOfDay];
-            
-            // Update greeting
-            document.getElementById('greeting').textContent = data.greeting;
-            document.getElementById('briefingSubtitle').textContent = data.subtitle;
-            document.getElementById('briefingSummary').textContent = data.summary;
-            document.getElementById('newsTitle').textContent = data.newsTitle;
-            document.getElementById('briefingQuote').textContent = `"${data.quote}"`;
-            
-            // Render news
-            const newsContainer = document.getElementById('newsList');
-            newsContainer.innerHTML = data.news.map((item, index) => `
-                <div style="display: flex; gap: var(--spacing-md); padding: var(--spacing-sm); background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-primary);">
-                    <div style="font-weight: 700; color: var(--accent-primary); min-width: 24px;">${index + 1}</div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px;">
-                            <div style="font-weight: 600; font-size: 0.9375rem;">${item.title}</div>
-                            <span style="font-size: 0.75rem; color: var(--text-muted); background: var(--bg-glass); padding: 2px 8px; border-radius: 4px;">${item.category}</span>
+            try {
+                console.log('renderBriefing called');
+                const timeOfDay = getTimeOfDay();
+                console.log('Time of day:', timeOfDay);
+                const data = briefingData[timeOfDay];
+                
+                // Update greeting
+                const greetingEl = document.getElementById('greeting');
+                const subtitleEl = document.getElementById('briefingSubtitle');
+                const summaryEl = document.getElementById('briefingSummary');
+                const newsTitleEl = document.getElementById('newsTitle');
+                const quoteEl = document.getElementById('briefingQuote');
+                const newsListEl = document.getElementById('newsList');
+                
+                if (greetingEl) greetingEl.textContent = data.greeting;
+                if (subtitleEl) subtitleEl.textContent = data.subtitle;
+                if (summaryEl) summaryEl.textContent = data.summary;
+                if (newsTitleEl) newsTitleEl.textContent = data.newsTitle;
+                if (quoteEl) quoteEl.textContent = `"${data.quote}"`;
+                
+                // Render news
+                if (newsListEl) {
+                    newsListEl.innerHTML = data.news.map((item, index) => `
+                        <div style="display: flex; gap: var(--spacing-md); padding: var(--spacing-sm); background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-primary); margin-bottom: 8px;">
+                            <div style="font-weight: 700; color: var(--accent-primary); min-width: 24px;">${index + 1}</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px;">
+                                    <div style="font-weight: 600; font-size: 0.9375rem;">${item.title}</div>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); background: var(--bg-glass); padding: 2px 8px; border-radius: 4px;">${item.category}</span>
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 2px;">${item.summary}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Source: ${item.source}</div>
+                            </div>
                         </div>
-                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 2px;">${item.summary}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Source: ${item.source}</div>
-                    </div>
-                </div>
-            `).join('');
+                    `).join('');
+                }
+                console.log('renderBriefing completed');
+            } catch (e) {
+                console.error('Error in renderBriefing:', e);
+            }
         }
 
         function refreshNews() {
